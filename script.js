@@ -1,3 +1,7 @@
+getpage = function() {
+	return new URLSearchParams(window.location.search).get('p') || 'index.md';
+}
+
 download = function(p) {
     fetch(p).then(function(r) {
 		if (r.ok) {
@@ -20,12 +24,16 @@ convert = function(md) {
 }
 
 document.addEventListener("DOMContentLoaded", function() {
-	document.querySelector('nav').addEventListener("click", function(el) {
-		el.preventDefault();
-		history.pushState({}, null, '?p=' + el.target.attributes.href.value)
-		download(el.target.href);
+	document.querySelector('nav').addEventListener("click", function(e) {
+		e.preventDefault();
+		window.history.pushState(null, null, '?p=' + e.target.attributes.href.value)
+		download(e.target.href);
 	});
   
-	const p = new URLSearchParams(window.location.search).get('p') || 'index.md';
-	download(p);
+	window.addEventListener("popstate", function(e) {
+		download(getpage());
+	});
+
+	download(getpage());
 });
+
